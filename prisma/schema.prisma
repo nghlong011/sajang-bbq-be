@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+// url      = env("DATABASE_URL") // supabase
+// directUrl = env("DIRECT_URL")
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  firstName String
+  lastName  String
+  phone     String
+  avatar    String?
+  role      String
+  createAt  DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Booking   Booking[]
+
+  @@map("users")
+}
+
+model Branch {
+  id        Int                   @id @default(autoincrement())
+  name      String
+  address   String
+  phone     String
+  table     Int
+  avatar    String?
+  utils     UtilitiesOnBranches[]
+  createAt  DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  Booking   Booking[]
+
+  @@map("branches")
+}
+
+model Utility {
+  id        Int                   @id @default(autoincrement())
+  name      String
+  branches  UtilitiesOnBranches[]
+  createAt  DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+
+  @@map("utilities")
+}
+
+model UtilitiesOnBranches {
+  branch    Branch?  @relation(fields: [branchId], references: [id])
+  branchId  Int
+  util      Utility? @relation(fields: [UtilityId], references: [id])
+  UtilityId Int
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([branchId, UtilityId])
+  @@map("utils_on_branches")
+}
+
+model Booking {
+  id         Int                @id @default(autoincrement())
+  status     String
+  customer   User?              @relation(fields: [customerId], references: [id])
+  customerId Int
+  branch     Branch?            @relation(fields: [branchId], references: [id])
+  branchId   Int
+  table      Int
+  date       String
+  schedule   Schedule?          @relation(fields: [scheduleId], references: [id])
+  scheduleId Int
+  dishes     DishesOnBookings[]
+  createAt   DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@map("bookings")
+}
+
+model Schedule {
+  id        Int       @id @default(autoincrement())
+  time      String
+  bookings  Booking[]
+  createAt  DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("schedules")
+}
+
+model Gallery {
+  id        Int      @id @default(autoincrement())
+  url       String
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("galleries")
+}
+
+model Blog {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String   @db.Text
+  imageUrl  String
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("blogs")
+}
+
+model Dish {
+  id        Int                @id @default(autoincrement())
+  name      String
+  bookings  DishesOnBookings[]
+  createAt  DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@map("dishes")
+}
+
+model DishesOnBookings {
+  dish      Dish?    @relation(fields: [dishId], references: [id])
+  dishId    Int
+  Booking   Booking? @relation(fields: [bookingId], references: [id])
+  bookingId Int
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([dishId, bookingId])
+  @@map("dishes_on_bookings")
+}

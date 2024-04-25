@@ -1,0 +1,12 @@
+# we create a Docker image from souce code
+version: 4.26.1;
+services: 
+  db:
+    image: postgres:16.1
+    container_name: postgresDB
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: sajang-bbq
