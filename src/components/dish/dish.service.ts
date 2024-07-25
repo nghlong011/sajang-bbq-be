@@ -9,10 +9,12 @@ export class DishService {
   constructor(private prismaService: PrismaService) {}
   async create(createDishDto: CreateDishDto) {
     try {
-      const { name } = createDishDto;
+      const { name, role, price } = createDishDto;
       await this.prismaService.dish.create({
         data: {
           name,
+          role,
+          price,
         },
       });
 
@@ -31,6 +33,9 @@ export class DishService {
       const dishes = await this.prismaService.dish.findMany({
         skip: (Number(current) - 1) * Number(size),
         take: Number(size),
+        include: {
+          bookings: true,
+        },
       });
       const count = await this.prismaService.dish.count();
 
@@ -50,13 +55,15 @@ export class DishService {
 
   async update(id: number, updateDishDto: UpdateDishDto) {
     try {
-      const { name } = updateDishDto;
+      const { name, role, price } = updateDishDto;
       await this.prismaService.dish.update({
         where: {
           id,
         },
         data: {
           name,
+          role,
+          price,
         },
       });
 

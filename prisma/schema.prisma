@@ -115,6 +115,8 @@ model Blog {
 model Dish {
   id        Int                @id @default(autoincrement())
   name      String
+  price     Int
+  role      String
   bookings  DishesOnBookings[]
   createAt  DateTime           @default(now())
   updatedAt DateTime           @updatedAt
@@ -132,4 +134,14 @@ model DishesOnBookings {
 
   @@id([dishId, bookingId])
   @@map("dishes_on_bookings")
+}
+
+model Revenue {
+  id        Int      @id @default(autoincrement())
+  date      String   @unique
+  revenue   Int
+  createAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("revenues")
 }

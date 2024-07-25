@@ -150,12 +150,38 @@ export class BookingService {
   async update(params: any, data: UpdateBookingDto) {
     try {
       const { status } = data;
-      await this.prismaService.booking.update({
+      const updatedBooking = await this.prismaService.booking.update({
         where: {
           id: Number(params.id),
         },
         data: { status },
+        include: {
+          dishes: {
+            include: {
+              dish: true,
+            },
+          },
+        },
       });
+
+      if (status === ENUM_BOOKING_STATUS.done) {
+        const totalDishPrice = updatedBooking.dishes.reduce(
+          (acc, curr) => acc + curr.dish.price,
+          0,
+        );
+        await this.prismaService.revenue.upsert({
+          where: {
+            date: updatedBooking.date,
+          },
+          update: {
+            revenue: totalDishPrice,
+          },
+          create: {
+            date: updatedBooking.date,
+            revenue: totalDishPrice,
+          },
+        });
+      }
 
       return {
         statusCode: HttpStatus.OK,

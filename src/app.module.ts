@@ -15,6 +15,7 @@ import { ScheduleModule } from './components/schedule/schedule.module';
 import { UserModule } from './components/user/user.module';
 import { UtilityModule } from './components/utility/utility.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { RevenueModule } from './components/revenue/revenue.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { PrismaModule } from './prisma/prisma.module';
     ScheduleModule,
     DishModule,
     ReviewModule,
+    RevenueModule,
   ],
   providers: [JwtStategy],
 })
